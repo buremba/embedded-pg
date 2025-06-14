@@ -1,0 +1,53 @@
+
+version: "3.9"
+
+services:
+  storage_broker:
+    image: ghcr.io/neondatabase/neon:latest
+    command: ["storage_broker", "--listen-addr=0.0.0.0:50051"]
+    restart: always
+
+  pageserver:
+    image: ghcr.io/neondatabase/neon:latest
+    depends_on:
+      - storage_broker
+    ports:
+      - "9898:9898"
+    restart: always
+
+  safekeeper1:
+    image: ghcr.io/neondatabase/neon:latest
+    depends_on: [storage_broker]
+    environment:
+      - SAFEKEEPER_ID=1
+      - BROKER_ENDPOINT=http://storage_broker:50051
+    restart: always
+
+  safekeeper2:
+    image: ghcr.io/neondatabase/neon:latest
+    depends_on: [storage_broker]
+    environment:
+      - SAFEKEEPER_ID=2
+      - BROKER_ENDPOINT=http://storage_broker:50051
+    restart: always
+
+  safekeeper3:
+    image: ghcr.io/neondatabase/neon:latest
+    depends_on: [storage_broker]
+    environment:
+      - SAFEKEEPER_ID=3
+      - BROKER_ENDPOINT=http://storage_broker:50051
+    restart: always
+
+  compute:
+    image: ghcr.io/neondatabase/compute-node-v16:latest
+    depends_on:
+      - pageserver
+      - safekeeper1
+      - safekeeper2
+      - safekeeper3
+    environment:
+      - PG_VERSION=16
+    ports:
+      - "55432:55432"
+    restart: always

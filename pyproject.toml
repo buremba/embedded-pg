@@ -1,0 +1,26 @@
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "embedded-serverless-postgresql"
+version = "0.1.0"
+description = "Spin up a self-hosted Neon PostgreSQL cluster inside Docker with one command."
+authors = [{ name = "ESP Maintainers", email = "maintainers@example.com" }]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = ["click>=8.1", "PyYAML>=6.0"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0",
+  "pytest-timeout",
+]
+
+[project.scripts]
+esp = "esp.cli:cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/esp"]
